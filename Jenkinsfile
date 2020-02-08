@@ -1,16 +1,32 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'maven-3.6.3'
-        jdk 'jdk-8'
-    }
-
     stages {
         stage('Build') {
+			agent {
+                docker { image 'maven:3-alpine' }
+            }
             steps {
-               sh 'mvn -B -DskipTests clean package'
+                sh 'mvn -B -DskipTests clean package'
+                archiveArtifacts 'target/*.jar'
             }
         }
     }
+// 	post {
+// 		success {
+// 			githubNotify status: "SUCCESS", 
+// 						 credentialsId: "github", 
+// 						 account: "vitorcradi", 
+// 						 repo: "lab-cicd",
+// 						 description: "Sucesso"
+						 
+//         }
+//         failure {
+//             githubNotify status: "FAILURE", 
+// 						 credentialsId: "github", 
+// 						 account: "vitorcradi", 
+// 						 repo: "lab-cicd",
+// 						 description: "Erro"
+//         }
+//     }
 }
